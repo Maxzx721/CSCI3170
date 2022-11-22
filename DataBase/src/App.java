@@ -21,12 +21,12 @@ public class App {
         conn.close();
     }
 
-    public static void menu(Connection conn) {
+    public static void menu(Connection conn) throws SQLException {
 
         Scanner in = new Scanner(System.in);
         
         System.out.println("Welcome to sales system!\n");
-        System.out.println("-----Main menue-----");
+        System.out.println("-----Main menu-----");
         System.out.println("What kinds of operation would you like to perform?");
         System.out.println("1. Operations for administrator");
         System.out.println("2. Operations for salesperson");
@@ -52,7 +52,7 @@ public class App {
         
     }
 
-    public static void administrator(Connection conn) {
+    public static void administrator(Connection conn) throws SQLException {
         
         Scanner in = new Scanner(System.in);
         
@@ -64,23 +64,29 @@ public class App {
         System.out.println("4. Show content of a table");
         System.out.println("5. Return to the main menu");
         System.out.print("Enter Your Choice: ");
-
+        
         int choice = in.nextInt();
 
         switch (choice) {
             case 1:
-
+                PreparedStatement[] stmts = {
+                    conn.prepareStatement("CREATE TABLE category (cid INTEGER NOT NULL, max INTEGER NOT NULL, period INTEGER NOT NULL, PRIMARY KEY (cid))"),
+                    conn.prepareStatement("CREATE TABLE manufacturer (libuid CHAR(10) NOT NULL, name VARCHAR(25) NOT NULL, address VARCHAR(100) NOT NULL, cid INTEGER NOT NULL, PRIMARY KEY (libuid))"),
+                    conn.prepareStatement("CREATE TABLE part (callnum CHAR(8) NOT NULL, title VARCHAR(30) NOT NULL, publish DATE NOT NULL, PRIMARY KEY (callnum))"),
+                    conn.prepareStatement("CREATE TABLE salesperson (callnum CHAR(8) NOT NULL, copynum INTEGER NOT NULL, PRIMARY KEY (callnum, copynum))"),
+                    conn.prepareStatement("CREATE TABLE transaction (libuid CHAR(10) NOT NULL, callnum CHAR(8) NOT NULL, copynum INTEGER NOT NULL, checkout DATE NOT NULL, ret DATE, PRIMARY KEY (libuid, callnum, copynum, checkout))")
+                };
                 System.out.println("Processing...Done! Database is initialized!");
                 break;
 
             case 2:
-            /*  for (int i = 0; i < tableNames.length; i++) {
-                    Statement stmt = conn.createStatement("DROP TABLE " + tableNames[i]);
+                for (int i = 0; i < tableNames.length; i++) {
+                    PreparedStatement stmt = conn.prepareStatement("DROP TABLE " + tableNames[i]);
                     stmt.execute();
                 }
                 System.out.println("Processing...Done! Database is removed!");
                 break;
-            */
+            
             case 3:
                 System.out.print("\nType in the Source Data Folder Path: ");
                 String path = in.nextLine();
@@ -103,7 +109,7 @@ public class App {
 
     }
 
-    public static void salesPerson(Connection conn) {
+    public static void salesPerson(Connection conn) throws SQLException {
 
         Scanner in = new Scanner(System.in);
         
@@ -145,7 +151,7 @@ public class App {
 
     }
     
-    public static void manager(Connection conn) {
+    public static void manager(Connection conn) throws SQLException {
 
         Scanner in = new Scanner(System.in);
         
