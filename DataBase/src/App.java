@@ -198,7 +198,7 @@ public class App {
                 String y2 = in.nextLine();
                 System.out.println("Transaction Record:");
 
-                stmt = conn.prepareStatement("SELECT sID AS ID, sNAME AS Name, sExperience AS Years of Experience, count(TEMP.tempCount) AS Number of Transaction FROM (SELECT COUNT(*) AS tempCount FROM transaction GROUP BY sID) TEMP, salesperson S WHERE TEMP.sID = S.sID AND S.sExperience >= " + y1 + " ANDS.sExperience <= " + y2 + " ORDER BY S.sID DESC");
+                stmt = conn.prepareStatement("SELECT sID AS ID, sNAME AS Name, sExperience AS Years of Experience, count(TEMP.tempCount) AS Number of Transaction FROM (SELECT COUNT(*) AS tempCount FROM transaction GROUP BY sID) TEMP, salesperson S WHERE TEMP.sID = S.sID AND S.sExperience >= " + y1 + " AND S.sExperience <= " + y2 + " ORDER BY S.sID DESC");
                 printShell(stmt);
                 System.out.println("End of Query");
                 break;
@@ -213,7 +213,7 @@ public class App {
                 System.out.print("Type in the number of parts: ");
                 String N = in.nextLine();
                 
-                stmt = conn.prepareStatement("SELECT mID AS Manufacturer ID, mName AS Manufacturer Name, count(TEMP.tempCount) AS Number of Transaction FROM (SELECT COUNT(*) AS tempCount FROM transaction NATURAL JOIN part GROUP BY pID) TEMP, manufacturer M WHERE TEMP.mID = M.mID AND rownum <= " + N + " ORDER BY Number of Transaction DESC");
+                stmt = conn.prepareStatement("SELECT mID AS Manufacturer ID, mName AS Manufacturer Name, count(TEMP.tempCount) AS Number of Transaction FROM (SELECT COUNT(*) AS tempCount FROM transaction NATURAL JOIN part GROUP BY pID) TEMP, manufacturer M WHERE TEMP.mID = M.mID ORDER BY Number of Transaction DESC LIMIT " + N);
                 printShell(stmt);
                 System.out.println("End of Query");
                 break;
