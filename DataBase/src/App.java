@@ -8,6 +8,10 @@ public class App {
 
     final static String[] tableNames = {"category", "manufacturer", "part", "salesperson", "transaction"};
 
+    public static PreparedStatement stmt;
+    public static ResultSet rs;
+    public static ResultSetMetaData rsmd;
+
     public static void main(String[] args) throws Exception {
         try { 
             Class.forName("com.mysql.jdbc.Driver"); 
@@ -84,7 +88,7 @@ public class App {
 
             case 2:
                 for (int i = 0; i < tableNames.length; i++) {
-                    PreparedStatement stmt = conn.prepareStatement("DROP TABLE " + tableNames[i]);
+                    stmt = conn.prepareStatement("DROP TABLE " + tableNames[i]);
                     stmt.execute();
                 }
                 System.out.println("Processing...Done! Database is removed!");
@@ -176,31 +180,51 @@ public class App {
                 System.out.print("Choose the list ordering: ");
                 choice = in.nextInt();
 
+                stmt = conn.prepareStatement("SELECT sID AS ID, sNAME AS Name, sPhoneNumber AS Mobile Phone, sExperience AS Year of Experience FROM salesperson ORDER BY sExperience " + ((choice == 1) ? "ASC" : "DESC"));
+                printShell(stmt);
                 break;
             
             case 2:
                 System.out.print("Type in the lower bound for years of experience: ");
-                choice = in.nextInt();
+                String y1 = in.nextLine();
                 System.out.print("Type in the upper bound for years of experience: ");
-                int choice1 = in.nextInt();
+                String y2 = in.nextLine();
+                System.out.println("Transaction Record:");
 
+                stmt = conn.prepareStatement("SELECT sID AS ID, sNAME AS Name, sExperience AS Years of Experience, count(TEMP.tempCount) AS Number of Transaction FROM (SELECT COUNT(*) AS tempCount FROM transaction GROUP BY sID) TEMP, salesperson S WHERE TEMP.sID = S.sID AND S.sExperience >= " + y1 + " ANDS.sExperience <= " + y2 + " ORDER BY S.sID DESC");
+                printShell(stmt);
                 System.out.println("End of Query");
                 break;
         
             case 3:
-
+                stmt = conn.prepareStatement("SELECT mID AS Manufacture ID, mName AS Manufacturer Name, SUM(pPrice) AS Total Sales Value FROM manufacturer NATURAL JOIN part NATURAL JOIN transaction Group by mID ORDER BY Total Sales Value DESC");
+                printShell(stmt);
                 System.out.println("End of Query");
                 break;
         
             case 4:
                 System.out.print("Type in the number of parts: ");
-                choice = in.nextInt();
+                String N = in.nextLine();
                 
+                stmt = conn.prepareStatement("SELECT mID AS Manufacturer ID, mName AS Manufacturer Name, count(TEMP.tempCount) AS Number of Transaction FROM (SELECT COUNT(*) AS tempCount FROM transaction NATURAL JOIN part GROUP BY pID) TEMP, manufacturer M WHERE TEMP.mID = M.mID AND rownum <= " + N + " ORDER BY Number of Transaction DESC");
+                printShell(stmt);
                 System.out.println("End of Query");
                 break;
         
             default:
                 menu(conn);
+        }
+    }
+
+    // printShell method is used for printing query result to the shell
+    public static void printShell(PreparedStatement stmt) throws SQLException {
+        rs = stmt.executeQuery();
+        rsmd = rs.getMetaData();
+        while (rs.next()) {
+            for(int i = 1; i < rsmd.getColumnCount(); i++) {
+                System.out.print("| " + rs.getString(i) + " ");
+            }
+            System.out.println("|");
         }
     }
 
