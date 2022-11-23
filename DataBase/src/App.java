@@ -74,124 +74,130 @@ public class App {
         System.out.println("4. Show content of a table");
         System.out.println("5. Return to the main menu");
     
-        loop: while(true){
+        loop: while(true) {
             System.out.print("Enter Your Choice: ");
             int choice = in.nextInt();
-        switch (choice) {
-            case 1:
-                PreparedStatement[] stmts = {
-                    conn.prepareStatement("CREATE TABLE category (cID INTEGER NOT NULL, cName VARCHAR(20) NOT NULL, PRIMARY KEY (cID))"),
-                    conn.prepareStatement("CREATE TABLE manufacturer (mID INTEGER NOT NULL, mName VARCHAR(20) NOT NULL, mAddress VARCHAR(50) NOT NULL, mPhoneNumber INTEGER NOT NULL, PRIMARY KEY (mID))"),
-                    conn.prepareStatement("CREATE TABLE part (pID INTEGER NOT NULL, pName VARCHAR(20) NOT NULL, pPrice INTEGER NOT NULL, mID INTEGER NOT NULL, cID INTEGER NOT NULL, pWarrantyPeriod INTEGER NOT NULL, pAvailableQuantity INTEGER NOT NULL, PRIMARY KEY (pID))"),
-                    conn.prepareStatement("CREATE TABLE salesperson (sID INTEGER NOT NULL, sName VARCHAR(20) NOT NULL, sAddress VARCHAR(50) NOT NULL, sPhoneNumber INTEGER NOT NULL, sExperience INTEGER NOT NULL, PRIMARY KEY (sID))"),
-                    conn.prepareStatement("CREATE TABLE transaction (tID INTEGER NOT NULL, pID INTEGER NOT NULL, sID INTEGER NOT NULL,tDate DATE NOT NULL, PRIMARY KEY (tID))")
-                };
-                for (int i = 0; i < stmts.length; i++) {
-                    stmts[i].execute();
-                }
-                System.out.println("Processing...Done! Database is initialized!");
-                break;
-            case 2:
-                for (int i = 0; i < tableNames.length; i++) {
-                    stmt = conn.prepareStatement("DROP TABLE " + tableNames[i]);
-                    stmt.execute();
-                   
-                }
-                System.out.println("Processing...Done! Database is removed!"); 
-                break;
-            case 3:
-                BufferedReader reader;
-                FileReader fr;
-                System.out.print("\nType in the Source Data Folder Path: ");
-                String path = in.next();
-                try{
-                    for(int i=0; i<datapath.length;i++){
-                        String filepath = path + datapath[i];
-                        fr = new FileReader(filepath);
-                        reader = new BufferedReader(fr);
-                        String data = reader.readLine();
-                        while(data != null){
-                            String[] splited = data.split("	");
-                            switch (i) {
-                            case 0:
-                            PreparedStatement stmt = conn.prepareStatement("INSERT INTO category (cID,cName) VALUES (?, ?)");
-                                stmt.setInt(1,Integer.parseInt(splited[0]));
-                                stmt.setString(2, splited[1]); 
-                                stmt.execute();
-                                break;
-                            case 1:
-                                PreparedStatement stmt2 = conn.prepareStatement("INSERT INTO manufacturer (mID,mName,mAddress,mPhoneNumber) VALUES (?, ?, ?, ?)");
-                                for(int j = 0; j<4;j++){
-                                    if(j!=0||j!=3){
-                                        stmt2.setString(j+1, splited[j]); 
-                                    }else{
-                                        stmt2.setInt(j+1,Integer.parseInt(splited[3]));
-                                    }
-                                }
-                                stmt2.execute();
-                            break;
-                            case 2:
-                            PreparedStatement stmt3 = conn.prepareStatement("INSERT INTO part (pID,pName,pPrice,mID,cID,pWarrantyPeriod,pAvailableQuantity) VALUES (?, ?, ?, ?, ?, ?, ?)");
-                                for(int j = 0; j<7;j++){
-                                    if(j==1){
-                                        stmt3.setString(j+1, splited[j]); 
-                                    }else{
-                                        stmt3.setInt(j+1,Integer.parseInt(splited[j]));
-                                    } 
-                                }
-                                stmt3.execute();
-                            break;
-                            case 3:
-                            PreparedStatement stmt4 = conn.prepareStatement("INSERT INTO salesperson (sID,sName,sAddress,sPhoneNumber,sExperience) VALUES (?, ?, ?, ?, ?)");
-                                for(int j = 0; j<5;j++){
-                                    if(j==1||j==2){
-                                        stmt4.setString(j+1, splited[j]); 
-                                    }else{
-                                        stmt4.setInt(j+1,Integer.parseInt(splited[j]));
-                                    }  
-                                }
-                                stmt4.execute();
-                            break;
-                            case 4:
-                                PreparedStatement stmt5 = conn.prepareStatement("INSERT INTO transaction (tID,pID,sID,tDate) VALUES (?, ?, ?, ?)");
-                                SimpleDateFormat format = new SimpleDateFormat( "MM/dd/yyyy" ); 
-                                java.util.Date tDate = format.parse(splited[3]);
-                                java.sql.Date sqlDate = new java.sql.Date( tDate.getTime() );
-                                for(int j = 0; j<4;j++){
-                                    if(j == 3){ 
-                                        stmt5.setDate(j+1, sqlDate);
-                                    }else{
-                                        stmt5.setInt(j+1,Integer.parseInt(splited[j]));                           
-                                    }
-                                }
-                                stmt5.execute();
-                                break;
-                            default:
-                                break;
-                            } 
-                            data = reader.readLine();
-                        }
+            switch (choice) {
+                case 1:
+                    PreparedStatement[] stmts = {
+                        conn.prepareStatement("CREATE TABLE category (cID INTEGER NOT NULL, cName VARCHAR(20) NOT NULL, PRIMARY KEY (cID))"),
+                        conn.prepareStatement("CREATE TABLE manufacturer (mID INTEGER NOT NULL, mName VARCHAR(20) NOT NULL, mAddress VARCHAR(50) NOT NULL, mPhoneNumber INTEGER NOT NULL, PRIMARY KEY (mID))"),
+                        conn.prepareStatement("CREATE TABLE part (pID INTEGER NOT NULL, pName VARCHAR(20) NOT NULL, pPrice INTEGER NOT NULL, mID INTEGER NOT NULL, cID INTEGER NOT NULL, pWarrantyPeriod INTEGER NOT NULL, pAvailableQuantity INTEGER NOT NULL, PRIMARY KEY (pID))"),
+                        conn.prepareStatement("CREATE TABLE salesperson (sID INTEGER NOT NULL, sName VARCHAR(20) NOT NULL, sAddress VARCHAR(50) NOT NULL, sPhoneNumber INTEGER NOT NULL, sExperience INTEGER NOT NULL, PRIMARY KEY (sID))"),
+                        conn.prepareStatement("CREATE TABLE transaction (tID INTEGER NOT NULL, pID INTEGER NOT NULL, sID INTEGER NOT NULL,tDate DATE NOT NULL, PRIMARY KEY (tID))")
+                    };
+                    for (int i = 0; i < stmts.length; i++) {
+                        stmts[i].execute();
                     }
-                }catch(Exception e){
-                    System.out.println(e);
-                }
-                System.out.println("Processing...Done! Data is inputted to the database!");
-                break;
+                    System.out.println("Processing...Done! Database is initialized!");
+                    break;
+                case 2:
+                    for (int i = 0; i < tableNames.length; i++) {
+                        stmt = conn.prepareStatement("DROP TABLE " + tableNames[i]);
+                        stmt.execute();
+                    
+                    }
+                    System.out.println("Processing...Done! Database is removed!"); 
+                    break;
+                case 3:
+                    BufferedReader reader;
+                    FileReader fr;
+                    System.out.print("\nType in the Source Data Folder Path: ");
+                    String path = in.next();
+                    try {
+                        for (int i = 0; i < datapath.length; i++) {
+                            String filepath = path + datapath[i];
+                            fr = new FileReader(filepath);
+                            reader = new BufferedReader(fr);
+                            String data = reader.readLine();
+                            while(data != null){
+                                String[] splited = data.split("	");
+                                switch (i) {
+                                case 0:
+                                    stmt = conn.prepareStatement("INSERT INTO category (cID,cName) VALUES (?, ?)");
+                                    stmt.setInt(1,Integer.parseInt(splited[0]));
+                                    stmt.setString(2, splited[1]); 
+                                    stmt.execute();
+                                    break;
 
-            case 4:
-                System.out.print("Which table would you like to show: ");
-                String table = in.next();
-                stmt = conn.prepareStatement("SELECT * FROM " + table);
-                printShell(stmt);
-                break;
+                                case 1:
+                                    stmt = conn.prepareStatement("INSERT INTO manufacturer (mID,mName,mAddress,mPhoneNumber) VALUES (?, ?, ?, ?)");
+                                    for(int j = 0; j<4;j++){
+                                        if (j!=0||j!=3) {
+                                            stmt.setString(j+1, splited[j]); 
+                                        }else {
+                                            stmt.setInt(j+1,Integer.parseInt(splited[3]));
+                                        }
+                                    }
+                                    stmt.execute();
+                                    break;
 
-            case 5:
-                menu(conn);
-                break loop;
-            
-            default:
-                break;
-        }}
+                                case 2:
+                                    stmt = conn.prepareStatement("INSERT INTO part (pID,pName,pPrice,mID,cID,pWarrantyPeriod,pAvailableQuantity) VALUES (?, ?, ?, ?, ?, ?, ?)");
+                                    for (int j = 0; j < 7; j++) {
+                                        if (j == 1) {
+                                            stmt.setString(j+1, splited[j]); 
+                                        }else {
+                                            stmt.setInt(j+1,Integer.parseInt(splited[j]));
+                                        } 
+                                    }
+                                    stmt.execute();
+                                    break;
+
+                                case 3:
+                                    stmt = conn.prepareStatement("INSERT INTO salesperson (sID,sName,sAddress,sPhoneNumber,sExperience) VALUES (?, ?, ?, ?, ?)");
+                                    for (int j = 0; j < 5; j++) {
+                                        if (j == 1 || j == 2) {
+                                            stmt.setString(j+1, splited[j]); 
+                                        }else {
+                                            stmt.setInt(j+1,Integer.parseInt(splited[j]));
+                                        }  
+                                    }
+                                    stmt.execute();
+                                    break;
+
+                                case 4:
+                                    stmt = conn.prepareStatement("INSERT INTO transaction (tID,pID,sID,tDate) VALUES (?, ?, ?, ?)");
+                                    SimpleDateFormat format = new SimpleDateFormat( "MM/dd/yyyy" ); 
+                                    java.util.Date tDate = format.parse(splited[3]);
+                                    java.sql.Date sqlDate = new java.sql.Date(tDate.getTime());
+                                    for (int j = 0; j<4;j++) {
+                                        if (j == 3) { 
+                                            stmt.setDate(j+1, sqlDate);
+                                        }else {
+                                            stmt.setInt(j+1, Integer.parseInt(splited[j]));                           
+                                        }
+                                    }
+                                    stmt.execute();
+                                    break;
+                                    
+                                default:
+                                    break;
+                                } 
+                                data = reader.readLine();
+                            }
+                        }
+                    }catch(Exception e) {
+                        System.out.println(e);
+                    }
+                    System.out.println("Processing...Done! Data is inputted to the database!");
+                    break;
+
+                case 4:
+                    System.out.print("Which table would you like to show: ");
+                    String table = in.next();
+                    stmt = conn.prepareStatement("SELECT * FROM " + table);
+                    printShell(stmt);
+                    break;
+
+                case 5:
+                    menu(conn);
+                    break loop;
+                
+                default:
+                    break;
+            }
+        }
     }   
 
     public static void salesPerson(Connection conn) throws SQLException {
@@ -301,10 +307,10 @@ public class App {
     public static void printShell(PreparedStatement stmt) throws SQLException {
         rs = stmt.executeQuery();
         rsmd = rs.getMetaData();
-             for(int i = 1; i <= rsmd.getColumnCount(); i++) {
-                 System.out.print("| " +rsmd.getColumnName(i)+ " ");
-             }
-            System.out.println("|");
+        for(int i = 1; i <= rsmd.getColumnCount(); i++) {
+            System.out.print("| " +rsmd.getColumnName(i)+ " ");
+        }
+        System.out.println("|");
         while (rs.next()) {
             for(int i = 1; i <= rsmd.getColumnCount(); i++) {
                 System.out.print("| " + rs.getString(i) + " ");
