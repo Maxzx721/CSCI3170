@@ -128,18 +128,21 @@ public class App {
         System.out.print("Enter Your Choice: ");
 
         int choice = in.nextInt();
-        
+        in.close();
 
         switch (choice) {
             case 1:
-
                 System.out.println("Choose the Search criterion:\n1. Part Name\n2. Manufacturer Name");
                 System.out.print("Choose the search criterion: ");
-                choice = in.nextInt();
-
+                choice = in.nextInt(); 
                 System.out.print("Choose the search criterion: ");
-                String name = in.nextLine();
-                in.close();
+                choice = in.nextInt();
+                System.out.print("Type in the Search Keyword: ");
+                String keyword = in.nextLine();
+                System.out.println("Choose ordering:\n1. By price, ascending order\n2. By price, descending order");
+                System.out.print("Choose the search criterion: ");
+                choice = in.nextInt();
+                
                 break;
             
             case 2:
@@ -152,7 +155,7 @@ public class App {
                 break;
         
             default:
-                in.close();
+                
                 menu(conn);
         }
 
