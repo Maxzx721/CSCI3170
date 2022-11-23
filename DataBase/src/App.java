@@ -308,7 +308,7 @@ public class App {
         rs = stmt.executeQuery();
         rsmd = rs.getMetaData();
         for(int i = 1; i <= rsmd.getColumnCount(); i++) {
-            System.out.print("| " +rsmd.getColumnName(i)+ " ");
+            System.out.print("| " + rsmd.getColumnName(i) + " ");
         }
         System.out.println("|");
         while (rs.next()) {
