@@ -22,6 +22,8 @@ public class App {
 
         menu(conn);
 
+        rs.close();
+        stmt.close();
         conn.close();
     }
 
@@ -105,7 +107,9 @@ public class App {
             case 4:
                 System.out.print("Whih table would you like to show: ");
                 String table = in.nextLine();
-
+                
+                stmt = conn.prepareStatement("SELECT * FROM " + table);
+                printShell(stmt);
                 in.close();
                 break;
         
