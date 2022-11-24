@@ -28,8 +28,10 @@ public class App {
         menu(conn);
 
         in.close();
-        rs.close();
-        stmt.close();
+        if (rs != null)
+            rs.close();
+        if (stmt != null)
+            stmt.close();
         conn.close();
         System.exit(0);
     }
