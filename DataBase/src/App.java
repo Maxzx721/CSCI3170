@@ -216,20 +216,25 @@ public class App {
                 System.out.println("Choose the Search criterion:\n1. Part Name\n2. Manufacturer Name");
                 System.out.print("Choose the search criterion: ");
                 choice = in.nextInt(); 
-                System.out.print("Choose the search criterion: ");
-                choice = in.nextInt();
+                in.nextLine();
                 System.out.print("Type in the Search Keyword: ");
-                String keyword = in.nextLine();
-                System.out.println("Choose ordering:\n1. By price, ascending order\n2. By price, descending order");
-                System.out.print("Choose the search criterion: ");
-                choice = in.nextInt();
-                
+                String keyword=in.nextLine();
+                System.out.println(keyword);
+                System.out.print("Choose ordering:\n1. By price, ascending order\n2. By price, descending order\nChoose the Search criterion:");
+                int order = in.nextInt();
+                if(choice == 1){
+                    stmt = conn.prepareStatement("SELECT pID,pName,mName,cName,pAvailableQuantity,pWarrantyPeriod,pPrice FROM manufacturer NATURAL JOIN part NATURAL JOIN category WHERE pName = '"+keyword+"' ORDER BY pPrice " + ((order == 1) ? "ASC" : "DESC"));
+                }else if(choice == 2){
+                    stmt = conn.prepareStatement("SELECT pID,pName,mName,cName,pAvailableQuantity,pWarrantyPeriod,pPrice FROM manufacturer NATURAL JOIN part NATURAL JOIN category WHERE mName = '"+keyword+"' ORDER BY pPrice " + ((order == 1) ? "ASC" : "DESC"));
+                }
+                printShell(stmt,"searchPart");
+                System.out.println("End of Query");
                 break;
             
             case 2:
                 System.out.print("Enter The Part ID: ");
                 choice = in.nextInt();
-                System.out.print("Enter The Salesperon ID: ");
+                System.out.println("Enter The Salesperon ID: ");
                 int choice1 = in.nextInt();
 
                 System.out.println("");
@@ -261,7 +266,7 @@ public class App {
                 System.out.println("Choose ordering:\n1. By ascending order\n2. By descending order");
                 System.out.print("Choose the list ordering: ");
                 choice = in.nextInt();
-                stmt = conn.prepareStatement("SELECT sID , sName, sPhoneNumber,sExperience FROM salesperson ORDER BY sExperience " + ((choice == 1) ? "ASC" : "DESC"));
+                stmt = conn.prepareStatement("SELECT sID,sName,sPhoneNumber,sExperience FROM salesperson ORDER BY sExperience " + ((choice == 1) ? "ASC" : "DESC"));
                 printShell(stmt,"sorting");
                 break;
             
@@ -302,10 +307,10 @@ public class App {
         rs = stmt.executeQuery();
         rsmd = rs.getMetaData();
         if(mode == "listAll"){
-        for(int i = 1; i <= rsmd.getColumnCount(); i++) {
-            System.out.print("| " + rsmd.getColumnName(i) + " ");
-        }
-        System.out.println("|");
+            for(int i = 1; i <= rsmd.getColumnCount(); i++) {
+                System.out.print("| " + rsmd.getColumnName(i) + " ");
+            }
+            System.out.println("|");
         }else if(mode == "sorting"){
             System.out.print("| ID ");System.out.print("| Name ");System.out.print("| Mobile Phone ");System.out.print("| Years of Experience ");System.out.println("|");
         }else if(mode =="Exp"){
@@ -315,6 +320,8 @@ public class App {
             System.out.print("| Manufacturer ID ");System.out.print("| Manufacturer Name ");System.out.print("| Total Sales Value ");System.out.println("|");
         }else if(mode == "mostP"){
             System.out.print("| Part ID ");System.out.print("| Part Name ");System.out.print("| No. of Transaction ");System.out.println("|");
+        }else if(mode == "searchPart"){
+            System.out.print("| ID ");System.out.print("| Name ");System.out.print("| Manufacturer ");System.out.print("| Category ");System.out.print("| Quantity ");System.out.print("| Warranty ");System.out.print("| Price ");System.out.println("|");
         }
         while (rs.next()) {
             for(int i = 1; i <= rsmd.getColumnCount(); i++) {
