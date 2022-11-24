@@ -208,7 +208,8 @@ public class App {
                 case 1:
                     System.out.println("Choose the Search criterion:\n1. Part Name\n2. Manufacturer Name");
                     System.out.print("Choose the search criterion: ");
-                    choice = in.nextInt(); 
+                    choice = in.nextInt();
+                    in.nextLine();
                     System.out.print("Type in the Search Keyword: ");
                     String keyword = in.nextLine();
                     System.out.println(keyword);
@@ -309,7 +310,6 @@ public class App {
                 case 4:
                     System.out.print("Type in the number of parts: ");
                     String N = in.next();
-                    //stmt = conn.prepareStatement("SELECT mID, mName, count(TEMP.tempCount) AS Number of Transaction FROM (SELECT COUNT(*) AS tempCount FROM transaction NATURAL JOIN part GROUP BY pID) TEMP, manufacturer M WHERE TEMP.mID = M.mID ORDER BY Number of Transaction DESC LIMIT " + N);
                     stmt = conn.prepareStatement("SELECT pID AS Part_ID, pName AS Part_Name, COUNT(*) AS No_of_Transaction FROM transaction NATURAL JOIN part GROUP BY pID ORDER BY No_of_Transaction DESC LIMIT " + N);
                     printShell(stmt);
                     System.out.println("End of Query");
