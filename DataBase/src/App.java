@@ -310,8 +310,9 @@ public class App {
             System.out.print("| Manufacturer ID ");System.out.print("| Manufacturer Name ");System.out.print("| Total Sales Value ");System.out.println("|");
         }else if(mode == "mostP"){
             System.out.print("| Part ID ");System.out.print("| Part Name ");System.out.print("| No. of Transaction ");System.out.println("|");
-        }else if(mode == "searchPart")
+        }else if(mode == "searchPart"){
             System.out.print("| ID ");System.out.print("| Name ");System.out.print("| Manufacturer ");System.out.print("| Category ");System.out.print("| Quantity ");System.out.print("| Warranty ");System.out.print("| Price ");System.out.println("|");
+        }
         while (rs.next()) {
             for(int i = 1; i <= rsmd.getColumnCount(); i++) 
                 System.out.print("| " + rs.getString(i) + " ");
