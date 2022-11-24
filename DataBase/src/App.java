@@ -70,7 +70,7 @@ public class App {
     public static void administrator(Connection conn) throws SQLException {
         
         System.out.println("\n-----Operations for administrator menu-----");
-        System.out.println("What kinds of operation would you like to perorm?");
+        System.out.println("What kinds of operation would you like to perform?");
         System.out.println("1. Create all tables");
         System.out.println("2. Delate all tables");
         System.out.println("3. Load from datafile");
