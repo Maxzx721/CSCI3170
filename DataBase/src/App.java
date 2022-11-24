@@ -50,11 +50,11 @@ public class App {
                 break;
 
             case 2:
-                salesPerson(conn);
+                salesPerson(conn,in);
                 break;
 
             case 3:
-                manager(conn);
+                manager(conn,in);
                 break;
 
             default:
@@ -187,7 +187,7 @@ public class App {
                     System.out.print("Which table would you like to show: ");
                     String table = in.next();
                     stmt = conn.prepareStatement("SELECT * FROM " + table);
-                    printShell(stmt);
+                    printShell(stmt,"listAll");
                     break;
 
                 case 5:
@@ -200,9 +200,7 @@ public class App {
         }
     }   
 
-    public static void salesPerson(Connection conn) throws SQLException {
-
-        Scanner in = new Scanner(System.in);
+    public static void salesPerson(Connection conn, Scanner in) throws SQLException {
         
         System.out.println("-----Operations for salesperson menu-----");
         System.out.println("What kinds of operation would you like to perform?");
@@ -212,7 +210,6 @@ public class App {
         System.out.print("Enter Your Choice: ");
 
         int choice = in.nextInt();
-        in.close();
 
         switch (choice) {
             case 1:
@@ -245,9 +242,8 @@ public class App {
 
     }
     
-    public static void manager(Connection conn) throws SQLException {
+    public static void manager(Connection conn, Scanner in) throws SQLException {
 
-        Scanner in = new Scanner(System.in);
         
         System.out.println("-----Operations for manager menu-----");
         System.out.println("What kinds of operation would you like to perform?");
@@ -259,42 +255,40 @@ public class App {
         System.out.print("Enter Your Choice: ");
 
         int choice = in.nextInt();
-        in.close();
 
         switch (choice) {
             case 1:
                 System.out.println("Choose ordering:\n1. By ascending order\n2. By descending order");
                 System.out.print("Choose the list ordering: ");
                 choice = in.nextInt();
-
-                stmt = conn.prepareStatement("SELECT sID AS ID, sNAME AS Name, sPhoneNumber AS Mobile Phone, sExperience AS Year of Experience FROM salesperson ORDER BY sExperience " + ((choice == 1) ? "ASC" : "DESC"));
-                printShell(stmt);
+                stmt = conn.prepareStatement("SELECT sID , sName, sPhoneNumber,sExperience FROM salesperson ORDER BY sExperience " + ((choice == 1) ? "ASC" : "DESC"));
+                printShell(stmt,"sorting");
                 break;
             
             case 2:
                 System.out.print("Type in the lower bound for years of experience: ");
-                String y1 = in.nextLine();
+                String y1 = in.next();
                 System.out.print("Type in the upper bound for years of experience: ");
-                String y2 = in.nextLine();
+                String y2 = in.next();
                 System.out.println("Transaction Record:");
 
-                stmt = conn.prepareStatement("SELECT sID AS ID, sNAME AS Name, sExperience AS Years of Experience, count(TEMP.tempCount) AS Number of Transaction FROM (SELECT COUNT(*) AS tempCount FROM transaction GROUP BY sID) TEMP, salesperson S WHERE TEMP.sID = S.sID AND S.sExperience >= " + y1 + " AND S.sExperience <= " + y2 + " ORDER BY S.sID DESC");
-                printShell(stmt);
+                stmt = conn.prepareStatement("SELECT S.sID, sName, sExperience, TEMP.tempCount  FROM (SELECT COUNT(*) AS tempCount,sID FROM transaction GROUP BY sID) AS TEMP, salesperson S WHERE TEMP.sID = S.sID AND S.sExperience >= " + y1 + " AND S.sExperience <= " + y2 + " ORDER BY S.sID DESC");
+                printShell(stmt,"Exp");
                 System.out.println("End of Query");
                 break;
         
             case 3:
-                stmt = conn.prepareStatement("SELECT mID AS Manufacture ID, mName AS Manufacturer Name, SUM(pPrice) AS Total Sales Value FROM manufacturer NATURAL JOIN part NATURAL JOIN transaction Group by mID ORDER BY Total Sales Value DESC");
-                printShell(stmt);
+                stmt = conn.prepareStatement("SELECT mID , mName, SUM(pPrice) AS psum FROM manufacturer NATURAL JOIN part NATURAL JOIN transaction Group by mID ORDER BY psum DESC");
+                printShell(stmt,"salevalue");
                 System.out.println("End of Query");
                 break;
         
             case 4:
                 System.out.print("Type in the number of parts: ");
-                String N = in.nextLine();
-                
-                stmt = conn.prepareStatement("SELECT mID AS Manufacturer ID, mName AS Manufacturer Name, count(TEMP.tempCount) AS Number of Transaction FROM (SELECT COUNT(*) AS tempCount FROM transaction NATURAL JOIN part GROUP BY pID) TEMP, manufacturer M WHERE TEMP.mID = M.mID ORDER BY Number of Transaction DESC LIMIT " + N);
-                printShell(stmt);
+                String N = in.next();
+                //stmt = conn.prepareStatement("SELECT mID, mName, count(TEMP.tempCount) AS Number of Transaction FROM (SELECT COUNT(*) AS tempCount FROM transaction NATURAL JOIN part GROUP BY pID) TEMP, manufacturer M WHERE TEMP.mID = M.mID ORDER BY Number of Transaction DESC LIMIT " + N);
+                stmt = conn.prepareStatement("SELECT pID,pName,COUNT(*) AS tempCount FROM transaction NATURAL JOIN part GROUP BY pID ORDER BY tempCount DESC LIMIT " + N);
+                printShell(stmt,"mostP");
                 System.out.println("End of Query");
                 break;
         
@@ -304,13 +298,24 @@ public class App {
     }
 
     // printShell method is used for printing query result to the shell
-    public static void printShell(PreparedStatement stmt) throws SQLException {
+    public static void printShell(PreparedStatement stmt, String mode) throws SQLException {
         rs = stmt.executeQuery();
         rsmd = rs.getMetaData();
+        if(mode == "listAll"){
         for(int i = 1; i <= rsmd.getColumnCount(); i++) {
             System.out.print("| " + rsmd.getColumnName(i) + " ");
         }
         System.out.println("|");
+        }else if(mode == "sorting"){
+            System.out.print("| ID ");System.out.print("| Name ");System.out.print("| Mobile Phone ");System.out.print("| Years of Experience ");System.out.println("|");
+        }else if(mode =="Exp"){
+            System.out.println("Transaction Record :");
+            System.out.print("| ID ");System.out.print("| Name ");System.out.print("| Years of Experience ");System.out.print("| Number of Transaction ");System.out.println("|");
+        }else if(mode == "salevalue"){
+            System.out.print("| Manufacturer ID ");System.out.print("| Manufacturer Name ");System.out.print("| Total Sales Value ");System.out.println("|");
+        }else if(mode == "mostP"){
+            System.out.print("| Part ID ");System.out.print("| Part Name ");System.out.print("| No. of Transaction ");System.out.println("|");
+        }
         while (rs.next()) {
             for(int i = 1; i <= rsmd.getColumnCount(); i++) {
                 System.out.print("| " + rs.getString(i) + " ");
