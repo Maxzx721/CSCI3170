@@ -27,10 +27,10 @@ public class App {
 
         menu(conn);
 
+        in.close();
         rs.close();
         stmt.close();
         conn.close();
-        in.close();
         System.exit(0);
     }
 
@@ -59,14 +59,13 @@ public class App {
                 manager(conn);
                 break;
 
-            default:
+            case 4:
                 return;
         }
         
     }
 
     public static void administrator(Connection conn) throws SQLException {
-        
         
         System.out.println("\n-----Operations for administrator menu-----");
         System.out.println("What kinds of operation would you like to perorm?");
@@ -76,7 +75,7 @@ public class App {
         System.out.println("4. Show content of a table");
         System.out.println("5. Return to the main menu");
     
-        loop: while(true) {
+        while(true) {
             System.out.print("Enter Your Choice: ");
             int choice = in.nextInt();
             switch (choice) {
@@ -92,6 +91,7 @@ public class App {
                         stmts[i].execute();
                     System.out.println("Processing...Done! Database is initialized!");
                     break;
+                    
                 case 2:
                     for (int i = 0; i < tableNames.length; i++) {
                         stmt = conn.prepareStatement("DROP TABLE " + tableNames[i]);
@@ -99,6 +99,7 @@ public class App {
                     }
                     System.out.println("Processing...Done! Database is removed!"); 
                     break;
+
                 case 3:
                     BufferedReader reader;
                     FileReader fr;
@@ -180,15 +181,11 @@ public class App {
                     String table = in.next();
                     System.out.println("Content of table category:");
                     stmt = conn.prepareStatement("SELECT * FROM " + table);
-                    printShell(stmt,"listAll");
+                    printShell(stmt);
                     break;
-
-                case 5:
-                    menu(conn);
-                    break loop;
                 
                 default:
-                    break;
+                    menu(conn);
             }
         }
     }   
@@ -200,41 +197,67 @@ public class App {
         System.out.println("1. Search for parts");
         System.out.println("2. Sell a part");
         System.out.println("3. Return to the main menu");
-        System.out.print("Enter Your Choice: ");
 
-        int choice = in.nextInt();
+        while(true) {
+            System.out.print("Enter Your Choice: ");
+            int choice = in.nextInt();
 
-        switch (choice) {
-            case 1:
-                System.out.println("Choose the Search criterion:\n1. Part Name\n2. Manufacturer Name");
-                System.out.print("Choose the search criterion: ");
-                choice = in.nextInt(); 
-                in.nextLine();
-                System.out.print("Type in the Search Keyword: ");
-                String keyword=in.nextLine();
-                System.out.println(keyword);
-                System.out.print("Choose ordering:\n1. By price, ascending order\n2. By price, descending order\nChoose the Search criterion:");
-                int order = in.nextInt();
-                if(choice == 1)
-                    stmt = conn.prepareStatement("SELECT pID, pName, mName, cName, pAvailableQuantity, pWarrantyPeriod, pPrice FROM manufacturer NATURAL JOIN part NATURAL JOIN category WHERE pName = '"+keyword+"' ORDER BY pPrice " + ((order == 1) ? "ASC" : "DESC"));
-                else if(choice == 2)
-                    stmt = conn.prepareStatement("SELECT pID, pName, mName, cName, pAvailableQuantity, pWarrantyPeriod, pPrice FROM manufacturer NATURAL JOIN part NATURAL JOIN category WHERE mName = '"+keyword+"' ORDER BY pPrice " + ((order == 1) ? "ASC" : "DESC"));
-                printShell(stmt,"searchPart");
-                System.out.println("End of Query");
-                break;
+            switch (choice) {
+                case 1:
+                    System.out.println("Choose the Search criterion:\n1. Part Name\n2. Manufacturer Name");
+                    System.out.print("Choose the search criterion: ");
+                    choice = in.nextInt(); 
+                    System.out.print("Type in the Search Keyword: ");
+                    String keyword = in.nextLine();
+                    System.out.println(keyword);
+                    System.out.print("Choose ordering:\n1. By price, ascending order\n2. By price, descending order\nChoose the Search criterion:");
+                    int order = in.nextInt();
+                    
+                    stmt = conn.prepareStatement("SELECT pID AS ID, pName AS Name, mName AS Manufacturer, cName AS Category, pAvailableQuantity AS Quantity, pWarrantyPeriod AS Warranty, pPrice AS Price FROM manufacturer NATURAL JOIN part NATURAL JOIN category WHERE " + ((choice == 1) ? "pName" : "mName") + " = '" + keyword + "' ORDER BY pPrice " + ((order == 1) ? "ASC" : "DESC"));
+                    printShell(stmt);
+                    System.out.println("End of Query");
+                    break;
+                
+                case 2:
+                    System.out.print("Enter The Part ID: ");
+                    String pid = in.next();
+                    System.out.print("Enter The Salesperon ID: ");
+                    String sid = in.next();
+
+                    stmt = conn.prepareStatement("SELECT pAvailableQuantity,pName FROM part WHERE pID =" + pid);
+                    rs = stmt.executeQuery();
+                    rsmd = rs.getMetaData();
+                    int rquantity = 0;
+                    String pname = "";
+                    while (rs.next()) {
+                        rquantity = Integer.parseInt(rs.getString(1));
+                        pname = rs.getString(2);
+                    }
+                    if(rquantity <= 0) {
+                        System.out.println("Opps ! the item has been sold out");
+                    }else {
+                        stmt = conn.prepareStatement("SELECT * FROM transaction");
+                        rs = stmt.executeQuery();
+                        rsmd = rs.getMetaData();
+                        int tid = 1;
+                        while (rs.next()) {
+                            tid++;
+                        }
+                        stmt = conn.prepareStatement("INSERT INTO transaction VALUES(?, ?, ?, curdate())");
+                        stmt.setInt(1, tid);
+                        stmt.setInt(2, Integer.parseInt(pid));
+                        stmt.setInt(3, Integer.parseInt(sid));
+                        stmt.execute();
+                        rquantity = rquantity - 1;
+                        stmt = conn.prepareStatement("Update part SET pAvailableQuantity = " + rquantity + " WHERE pID = " + pid);
+                        stmt.execute();
+                        System.out.println("Product: " + pname + "(id " + pid + ") Remaining Quantity: " + rquantity);
+                    }
+                    break;
             
-            case 2:
-                System.out.print("Enter The Part ID: ");
-                choice = in.nextInt();
-                System.out.println("Enter The Salesperon ID: ");
-                int choice1 = in.nextInt();
-
-                System.out.println("");
-                break;
-        
-            default:
-                menu(conn);
-
+                default:
+                    menu(conn);
+            }
         }
 
     }
@@ -249,70 +272,60 @@ public class App {
         System.out.println("3. Show the total sales value of each manufacturer");
         System.out.println("4. Show the N most popular part");
         System.out.println("5. Return to the main menu");
-        System.out.print("Enter Your Choice: ");
 
-        int choice = in.nextInt();
+        while(true) {
+            System.out.print("Enter Your Choice: ");
+            int choice = in.nextInt();
 
-        switch (choice) {
-            case 1:
-                System.out.println("Choose ordering:\n1. By ascending order\n2. By descending order");
-                System.out.print("Choose the list ordering: ");
-                choice = in.nextInt();
-                stmt = conn.prepareStatement("SELECT sID, sName, sPhoneNumber, sExperience FROM salesperson ORDER BY sExperience " + ((choice == 1) ? "ASC" : "DESC"));
-                printShell(stmt,"sorting");
-                break;
+            switch (choice) {
+                case 1:
+                    System.out.println("Choose ordering:\n1. By ascending order\n2. By descending order");
+                    System.out.print("Choose the list ordering: ");
+                    choice = in.nextInt();
+                    stmt = conn.prepareStatement("SELECT sID AS ID, sName AS Name, sPhoneNumber AS Mobile_Phone, sExperience AS Years_of_Experience FROM salesperson ORDER BY Years_of_Experience " + ((choice == 1) ? "ASC" : "DESC"));
+                    printShell(stmt);
+                    break;
+                
+                case 2:
+                    System.out.print("Type in the lower bound for years of experience: ");
+                    String y1 = in.next();
+                    System.out.print("Type in the upper bound for years of experience: ");
+                    String y2 = in.next();
+
+                    stmt = conn.prepareStatement("SELECT S.sID AS ID, sName AS Name, sExperience AS Years_of_Experience, TEMP.tempCount AS Number_of_Transaction FROM (SELECT COUNT(*) AS tempCount,sID FROM transaction GROUP BY sID) AS TEMP, salesperson S WHERE TEMP.sID = S.sID AND S.sExperience >= " + y1 + " AND S.sExperience <= " + y2 + " ORDER BY ID DESC");
+                    System.out.println("Transaction Record:");
+                    printShell(stmt);
+                    System.out.println("End of Query");
+                    break;
             
-            case 2:
-                System.out.print("Type in the lower bound for years of experience: ");
-                String y1 = in.next();
-                System.out.print("Type in the upper bound for years of experience: ");
-                String y2 = in.next();
-
-                stmt = conn.prepareStatement("SELECT S.sID, sName, sExperience, TEMP.tempCount FROM (SELECT COUNT(*) AS tempCount,sID FROM transaction GROUP BY sID) AS TEMP, salesperson S WHERE TEMP.sID = S.sID AND S.sExperience >= " + y1 + " AND S.sExperience <= " + y2 + " ORDER BY S.sID DESC");
-                System.out.println("Transaction Record:");
-                printShell(stmt,"Exp");
-                System.out.println("End of Query");
-                break;
-        
-            case 3:
-                stmt = conn.prepareStatement("SELECT mID , mName, SUM(pPrice) AS psum FROM manufacturer NATURAL JOIN part NATURAL JOIN transaction Group by mID ORDER BY psum DESC");
-                printShell(stmt, "salevalue");
-                System.out.println("End of Query");
-                break;
-        
-            case 4:
-                System.out.print("Type in the number of parts: ");
-                String N = in.next();
-                //stmt = conn.prepareStatement("SELECT mID, mName, count(TEMP.tempCount) AS Number of Transaction FROM (SELECT COUNT(*) AS tempCount FROM transaction NATURAL JOIN part GROUP BY pID) TEMP, manufacturer M WHERE TEMP.mID = M.mID ORDER BY Number of Transaction DESC LIMIT " + N);
-                stmt = conn.prepareStatement("SELECT pID, pName, COUNT(*) AS tempCount FROM transaction NATURAL JOIN part GROUP BY pID ORDER BY tempCount DESC LIMIT " + N);
-                printShell(stmt,"mostP");
-                System.out.println("End of Query");
-                break;
-        
-            default:
-                menu(conn);
+                case 3:
+                    stmt = conn.prepareStatement("SELECT mID AS Manufacture_ID, mName AS Manufacturer_Name, SUM(pPrice) AS Total_Sales_Value FROM manufacturer NATURAL JOIN part NATURAL JOIN transaction Group by mID ORDER BY Total_Sales_Value DESC");
+                    printShell(stmt);
+                    System.out.println("End of Query");
+                    break;
+            
+                case 4:
+                    System.out.print("Type in the number of parts: ");
+                    String N = in.next();
+                    //stmt = conn.prepareStatement("SELECT mID, mName, count(TEMP.tempCount) AS Number of Transaction FROM (SELECT COUNT(*) AS tempCount FROM transaction NATURAL JOIN part GROUP BY pID) TEMP, manufacturer M WHERE TEMP.mID = M.mID ORDER BY Number of Transaction DESC LIMIT " + N);
+                    stmt = conn.prepareStatement("SELECT pID AS Part_ID, pName AS Part_Name, COUNT(*) AS No_of_Transaction FROM transaction NATURAL JOIN part GROUP BY pID ORDER BY No_of_Transaction DESC LIMIT " + N);
+                    printShell(stmt);
+                    System.out.println("End of Query");
+                    break;
+            
+                default:
+                    menu(conn);
+            }
         }
     }
 
     // printShell method is used for printing query result to the shell
-    public static void printShell(PreparedStatement stmt, String mode) throws SQLException {
+    public static void printShell(PreparedStatement stmt) throws SQLException {
         rs = stmt.executeQuery();
         rsmd = rs.getMetaData();
-        if(mode == "listAll"){
-            for(int i = 1; i <= rsmd.getColumnCount(); i++)
-                System.out.print("| " + rsmd.getColumnName(i) + " ");
-            System.out.println("|");
-        }else if(mode == "sorting"){
-            System.out.print("| ID ");System.out.print("| Name ");System.out.print("| Mobile Phone ");System.out.print("| Years of Experience ");System.out.println("|");
-        }else if(mode == "Exp"){
-            System.out.print("| ID ");System.out.print("| Name ");System.out.print("| Years of Experience ");System.out.print("| Number of Transaction ");System.out.println("|");
-        }else if(mode == "salevalue"){
-            System.out.print("| Manufacturer ID ");System.out.print("| Manufacturer Name ");System.out.print("| Total Sales Value ");System.out.println("|");
-        }else if(mode == "mostP"){
-            System.out.print("| Part ID ");System.out.print("| Part Name ");System.out.print("| No. of Transaction ");System.out.println("|");
-        }else if(mode == "searchPart"){
-            System.out.print("| ID ");System.out.print("| Name ");System.out.print("| Manufacturer ");System.out.print("| Category ");System.out.print("| Quantity ");System.out.print("| Warranty ");System.out.print("| Price ");System.out.println("|");
-        }
+        for(int i = 1; i <= rsmd.getColumnCount(); i++)
+            System.out.print("| " + rsmd.getColumnLabel(i) + " ");
+        System.out.println("|");
         while (rs.next()) {
             for(int i = 1; i <= rsmd.getColumnCount(); i++) 
                 System.out.print("| " + rs.getString(i) + " ");
