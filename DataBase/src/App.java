@@ -27,13 +27,6 @@ public class App {
 
         menu(conn);
 
-        in.close();
-        if (rs != null)
-            rs.close();
-        if (stmt != null)
-            stmt.close();
-        conn.close();
-        System.exit(0);
     }
 
     public static void menu(Connection conn) throws SQLException {
@@ -61,23 +54,28 @@ public class App {
                 manager(conn);
                 break;
 
-            case 4:
-                return;
+            default:
+                in.close();
+                if (rs != null)
+                    rs.close();
+                if (stmt != null)
+                    stmt.close();
+                conn.close();
+                System.exit(0);
         }
         
     }
 
     public static void administrator(Connection conn) throws SQLException {
-        
-        System.out.println("\n-----Operations for administrator menu-----");
-        System.out.println("What kinds of operation would you like to perform?");
-        System.out.println("1. Create all tables");
-        System.out.println("2. Delate all tables");
-        System.out.println("3. Load from datafile");
-        System.out.println("4. Show content of a table");
-        System.out.println("5. Return to the main menu");
     
         while(true) {
+            System.out.println("\n-----Operations for administrator menu-----");
+            System.out.println("What kinds of operation would you like to perform?");
+            System.out.println("1. Create all tables");
+            System.out.println("2. Delate all tables");
+            System.out.println("3. Load from datafile");
+            System.out.println("4. Show content of a table");
+            System.out.println("5. Return to the main menu");
             System.out.print("Enter Your Choice: ");
             int choice = in.nextInt();
             switch (choice) {
@@ -193,14 +191,13 @@ public class App {
     }   
 
     public static void salesPerson(Connection conn) throws SQLException {
-        
-        System.out.println("\n-----Operations for salesperson menu-----");
-        System.out.println("What kinds of operation would you like to perform?");
-        System.out.println("1. Search for parts");
-        System.out.println("2. Sell a part");
-        System.out.println("3. Return to the main menu");
 
         while(true) {
+            System.out.println("\n-----Operations for salesperson menu-----");
+            System.out.println("What kinds of operation would you like to perform?");
+            System.out.println("1. Search for parts");
+            System.out.println("2. Sell a part");
+            System.out.println("3. Return to the main menu");
             System.out.print("Enter Your Choice: ");
             int choice = in.nextInt();
 
@@ -213,7 +210,7 @@ public class App {
                     System.out.print("Type in the Search Keyword: ");
                     String keyword = in.nextLine();
                     System.out.println(keyword);
-                    System.out.print("Choose ordering:\n1. By price, ascending order\n2. By price, descending order\nChoose the Search criterion:");
+                    System.out.print("Choose ordering:\n1. By price, ascending order\n2. By price, descending order\nChoose the Search criterion: ");
                     int order = in.nextInt();
                     
                     stmt = conn.prepareStatement("SELECT pID AS ID, pName AS Name, mName AS Manufacturer, cName AS Category, pAvailableQuantity AS Quantity, pWarrantyPeriod AS Warranty, pPrice AS Price FROM manufacturer NATURAL JOIN part NATURAL JOIN category WHERE " + ((choice == 1) ? "pName" : "mName") + " = '" + keyword + "' ORDER BY pPrice " + ((order == 1) ? "ASC" : "DESC"));
@@ -267,16 +264,14 @@ public class App {
     
     public static void manager(Connection conn) throws SQLException {
 
-        
-        System.out.println("\n-----Operations for manager menu-----");
-        System.out.println("What kinds of operation would you like to perform?");
-        System.out.println("1. List all salespersons");
-        System.out.println("2. Count the no. of sales record of each salesperson under a specific range on years of experience");
-        System.out.println("3. Show the total sales value of each manufacturer");
-        System.out.println("4. Show the N most popular part");
-        System.out.println("5. Return to the main menu");
-
         while(true) {
+            System.out.println("\n-----Operations for manager menu-----");
+            System.out.println("What kinds of operation would you like to perform?");
+            System.out.println("1. List all salespersons");
+            System.out.println("2. Count the no. of sales record of each salesperson under a specific range on years of experience");
+            System.out.println("3. Show the total sales value of each manufacturer");
+            System.out.println("4. Show the N most popular part");
+            System.out.println("5. Return to the main menu");
             System.out.print("Enter Your Choice: ");
             int choice = in.nextInt();
 
