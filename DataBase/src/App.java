@@ -85,7 +85,7 @@ public class App {
                         conn.prepareStatement("CREATE TABLE manufacturer (mID INTEGER NOT NULL, mName VARCHAR(20) NOT NULL, mAddress VARCHAR(50) NOT NULL, mPhoneNumber INTEGER NOT NULL, PRIMARY KEY (mID))"),
                         conn.prepareStatement("CREATE TABLE part (pID INTEGER NOT NULL, pName VARCHAR(20) NOT NULL, pPrice INTEGER NOT NULL, mID INTEGER NOT NULL, cID INTEGER NOT NULL, pWarrantyPeriod INTEGER NOT NULL, pAvailableQuantity INTEGER NOT NULL, PRIMARY KEY (pID))"),
                         conn.prepareStatement("CREATE TABLE salesperson (sID INTEGER NOT NULL, sName VARCHAR(20) NOT NULL, sAddress VARCHAR(50) NOT NULL, sPhoneNumber INTEGER NOT NULL, sExperience INTEGER NOT NULL, PRIMARY KEY (sID))"),
-                        conn.prepareStatement("CREATE TABLE transaction (tID INTEGER NOT NULL, pID INTEGER NOT NULL, sID INTEGER NOT NULL,tDate DATE NOT NULL, PRIMARY KEY (tID))")
+                        conn.prepareStatement("CREATE TABLE transaction (tID INTEGER NOT NULL, pID INTEGER NOT NULL, sID INTEGER NOT NULL, tDate DATE NOT NULL, PRIMARY KEY (tID))")
                     };
                     for (int i = 0; i < stmts.length; i++)
                         stmts[i].execute();
@@ -209,7 +209,6 @@ public class App {
                     in.nextLine();
                     System.out.print("Type in the Search Keyword: ");
                     String keyword = in.nextLine();
-                    System.out.println(keyword);
                     System.out.print("Choose ordering:\n1. By price, ascending order\n2. By price, descending order\nChoose the Search criterion: ");
                     int order = in.nextInt();
                     
@@ -224,7 +223,7 @@ public class App {
                     System.out.print("Enter The Salesperon ID: ");
                     String sid = in.next();
 
-                    stmt = conn.prepareStatement("SELECT pAvailableQuantity,pName FROM part WHERE pID =" + pid);
+                    stmt = conn.prepareStatement("SELECT pAvailableQuantity, pName FROM part WHERE pID =" + pid);
                     rs = stmt.executeQuery();
                     rsmd = rs.getMetaData();
                     int rquantity = 0;
@@ -290,7 +289,7 @@ public class App {
                     System.out.print("Type in the upper bound for years of experience: ");
                     String y2 = in.next();
 
-                    stmt = conn.prepareStatement("SELECT S.sID AS ID, sName AS Name, sExperience AS Years_of_Experience, TEMP.tempCount AS Number_of_Transaction FROM (SELECT COUNT(*) AS tempCount,sID FROM transaction GROUP BY sID) AS TEMP, salesperson S WHERE TEMP.sID = S.sID AND S.sExperience >= " + y1 + " AND S.sExperience <= " + y2 + " ORDER BY ID DESC");
+                    stmt = conn.prepareStatement("SELECT S.sID AS ID, sName AS Name, sExperience AS Years_of_Experience, TEMP.tempCount AS Number_of_Transaction FROM (SELECT COUNT(*) AS tempCount, sID FROM transaction GROUP BY sID) AS TEMP, salesperson S WHERE TEMP.sID = S.sID AND S.sExperience >= " + y1 + " AND S.sExperience <= " + y2 + " ORDER BY ID DESC");
                     System.out.println("Transaction Record:");
                     printShell(stmt);
                     System.out.println("End of Query");
