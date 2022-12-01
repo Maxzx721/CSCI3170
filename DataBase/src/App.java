@@ -153,7 +153,7 @@ public class App {
 
                                 case 4:
                                     stmt = conn.prepareStatement("INSERT INTO transaction (tID, pID, sID, tDate) VALUES (?, ?, ?, ?)");
-                                    SimpleDateFormat format = new SimpleDateFormat( "MM/dd/yyyy" ); 
+                                    SimpleDateFormat format = new SimpleDateFormat( "DD/MM/YYYY" ); 
                                     java.util.Date tDate = format.parse(splited[3]);
                                     java.sql.Date sqlDate = new java.sql.Date(tDate.getTime());
                                     for (int j = 0; j<4;j++) 
@@ -180,7 +180,10 @@ public class App {
                     System.out.print("Which table would you like to show: ");
                     String table = in.next();
                     System.out.println("Content of table category:");
-                    stmt = conn.prepareStatement("SELECT * FROM " + table);
+                    if (table.equals("transaction")) 
+                        stmt = conn.prepareStatement("SELECT tID, pID, sID, DATE_FORMAT(tDate, '%d/%m/%Y') AS tData FROM " + table);
+                    else 
+                        stmt = conn.prepareStatement("SELECT * FROM " + table);
                     printShell(stmt);
                     break;
                 
