@@ -25,13 +25,13 @@ public class App {
         }
         Connection conn = DriverManager.getConnection(dbAddress, dbUsername, dbPassword);
 
+        System.out.println("Welcome to sales system!\n");
         menu(conn);
 
     }
 
     public static void menu(Connection conn) throws SQLException {
         
-        System.out.println("Welcome to sales system!\n");
         System.out.println("-----Main menu-----");
         System.out.println("What kinds of operation would you like to perform?");
         System.out.println("1. Operations for administrator");
