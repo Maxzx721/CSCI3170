@@ -114,58 +114,58 @@ public class App {
                             while (data != null) {
                                 String[] splited = data.split("	");
                                 switch (i) {
-                                case 0:
-                                    stmt = conn.prepareStatement("INSERT INTO category (cID, cName) VALUES (?, ?)");
-                                    stmt.setInt(1, Integer.parseInt(splited[0]));
-                                    stmt.setString(2, splited[1]); 
-                                    stmt.execute();
-                                    break;
+                                    case 0:
+                                        stmt = conn.prepareStatement("INSERT INTO category (cID, cName) VALUES (?, ?)");
+                                        stmt.setInt(1, Integer.parseInt(splited[0]));
+                                        stmt.setString(2, splited[1]); 
+                                        stmt.execute();
+                                        break;
 
-                                case 1:
-                                    stmt = conn.prepareStatement("INSERT INTO manufacturer (mID, mName, mAddress, mPhoneNumber) VALUES (?, ?, ?, ?)");
-                                    for(int j = 0; j < 4; j++)
-                                        if (j != 0 || j != 3)
-                                            stmt.setString(j + 1, splited[j]); 
-                                        else 
-                                            stmt.setInt(j + 1, Integer.parseInt(splited[3]));
-                                    stmt.execute();
-                                    break;
+                                    case 1:
+                                        stmt = conn.prepareStatement("INSERT INTO manufacturer (mID, mName, mAddress, mPhoneNumber) VALUES (?, ?, ?, ?)");
+                                        for(int j = 0; j < 4; j++)
+                                            if (j != 0 || j != 3)
+                                                stmt.setString(j + 1, splited[j]); 
+                                            else 
+                                                stmt.setInt(j + 1, Integer.parseInt(splited[3]));
+                                        stmt.execute();
+                                        break;
 
-                                case 2:
-                                    stmt = conn.prepareStatement("INSERT INTO part (pID, pName, pPrice, mID, cID, pWarrantyPeriod, pAvailableQuantity) VALUES (?, ?, ?, ?, ?, ?, ?)");
-                                    for (int j = 0; j < 7; j++) 
-                                        if (j == 1) 
-                                            stmt.setString(j + 1, splited[j]); 
-                                        else
-                                            stmt.setInt(j + 1, Integer.parseInt(splited[j]));
-                                    stmt.execute();
-                                    break;
+                                    case 2:
+                                        stmt = conn.prepareStatement("INSERT INTO part (pID, pName, pPrice, mID, cID, pWarrantyPeriod, pAvailableQuantity) VALUES (?, ?, ?, ?, ?, ?, ?)");
+                                        for (int j = 0; j < 7; j++) 
+                                            if (j == 1) 
+                                                stmt.setString(j + 1, splited[j]); 
+                                            else
+                                                stmt.setInt(j + 1, Integer.parseInt(splited[j]));
+                                        stmt.execute();
+                                        break;
 
-                                case 3:
-                                    stmt = conn.prepareStatement("INSERT INTO salesperson (sID, sName, sAddress, sPhoneNumber, sExperience) VALUES (?, ?, ?, ?, ?)");
-                                    for (int j = 0; j < 5; j++) 
-                                        if (j == 1 || j == 2) 
-                                            stmt.setString(j + 1, splited[j]); 
-                                        else 
-                                            stmt.setInt(j + 1, Integer.parseInt(splited[j]));
-                                    stmt.execute();
-                                    break;
+                                    case 3:
+                                        stmt = conn.prepareStatement("INSERT INTO salesperson (sID, sName, sAddress, sPhoneNumber, sExperience) VALUES (?, ?, ?, ?, ?)");
+                                        for (int j = 0; j < 5; j++) 
+                                            if (j == 1 || j == 2) 
+                                                stmt.setString(j + 1, splited[j]); 
+                                            else 
+                                                stmt.setInt(j + 1, Integer.parseInt(splited[j]));
+                                        stmt.execute();
+                                        break;
 
-                                case 4:
-                                    stmt = conn.prepareStatement("INSERT INTO transaction (tID, pID, sID, tDate) VALUES (?, ?, ?, ?)");
-                                    SimpleDateFormat format = new SimpleDateFormat( "DD/MM/YYYY" ); 
-                                    java.util.Date tDate = format.parse(splited[3]);
-                                    java.sql.Date sqlDate = new java.sql.Date(tDate.getTime());
-                                    for (int j = 0; j<4;j++) 
-                                        if (j == 3)
-                                            stmt.setDate(j+1, sqlDate);
-                                        else 
-                                            stmt.setInt(j+1, Integer.parseInt(splited[j]));                           
-                                    stmt.execute();
-                                    break;
-                                    
-                                default:
-                                    break;
+                                    case 4:
+                                        stmt = conn.prepareStatement("INSERT INTO transaction (tID, pID, sID, tDate) VALUES (?, ?, ?, ?)");
+                                        SimpleDateFormat format = new SimpleDateFormat( "DD/MM/YYYY" ); 
+                                        java.util.Date tDate = format.parse(splited[3]);
+                                        java.sql.Date sqlDate = new java.sql.Date(tDate.getTime());
+                                        for (int j = 0; j<4;j++) 
+                                            if (j == 3)
+                                                stmt.setDate(j+1, sqlDate);
+                                            else 
+                                                stmt.setInt(j+1, Integer.parseInt(splited[j]));                           
+                                        stmt.execute();
+                                        break;
+                                        
+                                    default:
+                                        break;
                                 } 
                                 data = reader.readLine();
                             }
