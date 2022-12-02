@@ -90,7 +90,7 @@ public class App {
                     for (int i = 0; i < stmts.length; i++)
                         stmts[i].execute();
                     System.out.println("Processing...Done! Database is initialized!");
-                    break;
+                    menu(conn);
                     
                 case 2:
                     for (int i = 0; i < tableNames.length; i++) {
@@ -98,7 +98,7 @@ public class App {
                         stmt.execute();
                     }
                     System.out.println("Processing...Done! Database is removed!"); 
-                    break;
+                    menu(conn);
 
                 case 3:
                     BufferedReader reader;
@@ -174,7 +174,7 @@ public class App {
                         System.out.println(e);
                     }
                     System.out.println("Processing...Done! Data is inputted to the database!");
-                    break;
+                    menu(conn);
 
                 case 4:
                     System.out.print("Which table would you like to show: ");
@@ -185,7 +185,7 @@ public class App {
                     else 
                         stmt = conn.prepareStatement("SELECT * FROM " + table);
                     printShell(stmt);
-                    break;
+                    menu(conn);
                 
                 default:
                     menu(conn);
@@ -218,7 +218,7 @@ public class App {
                     stmt = conn.prepareStatement("SELECT pID AS ID, pName AS Name, mName AS Manufacturer, cName AS Category, pAvailableQuantity AS Quantity, pWarrantyPeriod AS Warranty, pPrice AS Price FROM manufacturer NATURAL JOIN part NATURAL JOIN category WHERE " + ((choice == 1) ? "pName" : "mName") + " = '" + keyword + "' ORDER BY pPrice " + ((order == 1) ? "ASC" : "DESC"));
                     printShell(stmt);
                     System.out.println("End of Query");
-                    break;
+                    menu(conn);
                 
                 case 2:
                     System.out.print("Enter The Part ID: ");
@@ -255,7 +255,7 @@ public class App {
                         stmt.execute();
                         System.out.println("Product: " + pname + "(id " + pid + ") Remaining Quantity: " + rquantity);
                     }
-                    break;
+                    menu(conn);
             
                 default:
                     menu(conn);
@@ -284,7 +284,7 @@ public class App {
                     choice = in.nextInt();
                     stmt = conn.prepareStatement("SELECT sID AS ID, sName AS Name, sPhoneNumber AS Mobile_Phone, sExperience AS Years_of_Experience FROM salesperson ORDER BY Years_of_Experience " + ((choice == 1) ? "ASC" : "DESC"));
                     printShell(stmt);
-                    break;
+                    menu(conn);
                 
                 case 2:
                     System.out.print("Type in the lower bound for years of experience: ");
@@ -296,13 +296,13 @@ public class App {
                     System.out.println("Transaction Record:");
                     printShell(stmt);
                     System.out.println("End of Query");
-                    break;
+                    menu(conn);
             
                 case 3:
                     stmt = conn.prepareStatement("SELECT mID AS Manufacture_ID, mName AS Manufacturer_Name, SUM(pPrice) AS Total_Sales_Value FROM manufacturer NATURAL JOIN part NATURAL JOIN transaction Group by mID ORDER BY Total_Sales_Value DESC");
                     printShell(stmt);
                     System.out.println("End of Query");
-                    break;
+                    menu(conn);
             
                 case 4:
                     System.out.print("Type in the number of parts: ");
@@ -310,7 +310,7 @@ public class App {
                     stmt = conn.prepareStatement("SELECT pID AS Part_ID, pName AS Part_Name, COUNT(*) AS No_of_Transaction FROM transaction NATURAL JOIN part GROUP BY pID ORDER BY No_of_Transaction DESC LIMIT " + N);
                     printShell(stmt);
                     System.out.println("End of Query");
-                    break;
+                    menu(conn);
             
                 default:
                     menu(conn);
